@@ -16,6 +16,11 @@ export class Config {
    * Temporary directory used for downloading images.
    */
   static tempDir: string = process.env.ESI_TEMP_DIR || './temp';
+
+  /**
+   * Topic config file.
+   */
+  static topicConfigFile: string = process.env.ESI_TOPIC_CONFIG_FILE || './topic-config.json';
   
   /**
    * Elvis server url.

@@ -5,49 +5,39 @@ import Twitter = require('twitter');
 import request = require('request');
 import path = require('path');
 import hashFile = require('hash_file');
+import { TopicConfig } from './topic-config';
+import { Topic } from './topic';
 
 export class SocialImport {
 
   private twitterClient: Twitter;
   private elvisApi: ElvisApi = ApiManager.getApi();
-  private topicConfig:any;
-  private topicsByKeyword:any = {};
+  private topicConfig:TopicConfig;
   
   constructor() {
+    this.init();
+  }
+
+  private async init() {
     let args = {
       consumer_key: Config.twitterConsumerKey,
       consumer_secret: Config.twitterConsumerSecret,
       access_token_key: Config.twitterAccessTokenKey,
       access_token_secret: Config.twitterAccessTokenSecret
     }
-
     this.twitterClient = new Twitter(args);
-
-    this.topicConfig =  {
-      'Grammys' : ['Grammys', 'Grammys2018'],
-      'Golden Globes' : ['GoldenGlobes'],
-      'Sag Awards' : ['SAGAwards'],
-      'Rohingya' : ['Rohingya', 'RHONJ'],
-      'California Wildfire' : ['CaliforniaWildfire', 'CaliforniaFire'],
-      'Star Wars The Last Jedi' : ['StarWarsTheLastJedi'],
-      'Roy Moore' : ['RoyMoore'],
-      'Ivana Smit' : ['IvanaSmit'],
-      'Salma Hayek' : ['SalmaHayek']
+    this.topicConfig = await TopicConfig.getTopicConfig();
+    if (this.topicConfig.topics.length == 0) {
+      this.topicConfig.addTopic(new Topic('Oscars', ['Oscars2018', 'Oscars', 'Oscar', 'Oscars90']));
+      this.topicConfig.addTopic(new Topic('Golden Globes', ['GoldenGlobes', 'GoldenGlobes2018', 'Globes2018', 'GG2018', 'goldenglobe']));
+      this.topicConfig.addTopic(new Topic('Storm Emma', ['StormEmma', 'BeastFromTheEast']));
     }
-
-    // Create reversed map for quick lookup
-    for (let [topic, keywords] of Object.entries(this.topicConfig)) {
-      for (let keyword of keywords) {
-        this.topicsByKeyword[keyword] = topic;
-      }
-    }
-
     this.searchTwitter();
   }
 
   private searchTwitter():void {
-    let searchFor:string = Object.keys(this.topicsByKeyword).join(',');
-    this.twitterClient.stream('statuses/filter', {track: searchFor},  (stream) => {
+    let searchFor:string = this.topicConfig.allKeywords.join(',');
+    this.twitterClient.stream('statuses/filter', {track: searchFor}, (stream) => {
       stream.on('data', (tweet) => {
         this.downloadTweetMedia(tweet);
       });
@@ -60,7 +50,7 @@ export class SocialImport {
   private async downloadTweetMedia(tweet:any):Promise<void> {
     if (tweet.entities && tweet.entities.media && !tweet.retweeted_status) {
       let media = tweet.entities.media;
-      let foundKeyword:string = this.findKeyword(tweet.text);
+      let foundKeyword:string = this.topicConfig.findKeyword(tweet.text);
       media.forEach(async mediaItem => {
         console.log('Found a ' + mediaItem.type + ' searching for "' + foundKeyword + '". Tweet url: ' + mediaItem.url + ' Tweet ' + mediaItem.type + ': ' +  mediaItem.media_url_https);
         let buffer:Buffer = await this.downloadFile(mediaItem.media_url_https);
@@ -72,23 +62,6 @@ export class SocialImport {
         }
       });
     }
-  }
-
-  private findKeyword(tweetTxt:string):string {
-    let tweetWords:string[] = tweetTxt.toLowerCase().match(/[^\s]+/g);
-    let keywordMap = Object.entries(this.topicsByKeyword);
-    for (let [keyword, topic] of keywordMap) {
-      if(tweetWords.includes(keyword.toLowerCase()) || tweetWords.includes('#' + keyword.toLowerCase())) {
-        return topic;
-      }
-    }
-    // Not found on exact word match, fallback to partial matching
-    for (let [keyword, topic] of keywordMap) {
-      if(tweetTxt.toLowerCase().indexOf(keyword) > -1) {
-        return topic;
-      }
-    }
-    return '';
   }
 
   private downloadFile(url:string):Promise<Buffer> {
