@@ -12,8 +12,8 @@ export class TopicConfig {
   public static async getTopicConfig(): Promise<TopicConfig> {
     if (!this.instance) {
       this.instance = new this();
+      await this.instance.loadConfig();
     }
-    await this.instance.loadConfig();
     return this.instance;
   }
 
@@ -33,8 +33,18 @@ export class TopicConfig {
     return this._allKeywords;
   }
 
-  public addTopic(topic:Topic):void {
-    this._topics.push(topic);
+  public saveTopic(topic:Topic):void {
+    let existingTopic:Topic = this.topics.find((t:Topic) => {
+      return t.name === topic.name;
+    });
+    if (existingTopic) {
+      // Update existing topic
+      existingTopic.keywords = topic.keywords;
+    }
+    else {
+      // Save new topic
+      this._topics.push(topic);
+    }
     this.topicsChangedHandler();
   }
 

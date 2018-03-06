@@ -8,6 +8,7 @@ import http = require('http');
 
 import { SocialImport } from './social/social-import';
 import { Config } from './config';
+import { ApiManager } from './social/api-manager';
 
 require("console-stamp")(console, { pattern: "dd-mm-yyyy HH:MM:ss.l" });
 /**
@@ -25,7 +26,6 @@ class Server {
   
   private constructor() {
     this.app = express();
-    new SocialImport();
   }
 
   /**
@@ -40,6 +40,9 @@ class Server {
     http.createServer(this.app).listen(Config.httpPort, () => {
       console.info('HTTP Server started at port: ' + Config.httpPort);
     });
+
+    new ApiManager(this.app);
+    new SocialImport();
   }
 }
 

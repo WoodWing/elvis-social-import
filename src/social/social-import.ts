@@ -11,6 +11,7 @@ import { Topic } from './topic';
 export class SocialImport {
 
   private twitterClient: Twitter;
+  private twitterStream;
   private elvisApi: ElvisApi = ApiManager.getApi();
   private topicConfig:TopicConfig;
   
@@ -33,11 +34,20 @@ export class SocialImport {
       this.topicConfig.addTopic(new Topic('Storm Emma', ['StormEmma', 'BeastFromTheEast']));
     }
     this.searchTwitter();
+    // Reset search every minute
+    setInterval(this.searchTwitter.bind(this), 60 * 1000);
   }
 
   private searchTwitter():void {
+    if (this.twitterStream) {
+      // Destroy existing stream
+      this.twitterStream.destroy();
+    }
+
     let searchFor:string = this.topicConfig.allKeywords.join(',');
+    console.log('New twitter search started for: ' + searchFor);
     this.twitterClient.stream('statuses/filter', {track: searchFor}, (stream) => {
+      this.twitterStream = stream;
       stream.on('data', (tweet) => {
         this.downloadTweetMedia(tweet);
       });
