@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<info>
+		<version>
+			<pluginVersion>1.0</pluginVersion>
+			<requiresAtLeast>6.7.0.0</requiresAtLeast>
+		</version>
+		<description>Manage Twitter image feeds and show all info about images sourced from Twitter.</description>
+		<documentationUrl></documentationUrl>
+	</info>
+	<panel>
+		<url>${pluginUrl}/panel.html</url>
+		
+		<iconUrl>${pluginUrl}/resources/icon.svg</iconUrl>
+
+		<panelLocations>
+			<panelLocation id="mainRightPanel" order="4"/>
+		</panelLocations>
+
+		<requiredRoles>
+			<role>ROLE_CUSTOM_SOCIAL</role>
+		</requiredRoles>
+
+		<messages>
+			<entries locale="en_US">
+				<entry key="title">Tweet info</entry>
+				<entry key="button.tooltip">Manage Twitter image feeds and show all info about images sourced from Twitter</entry>
+			</entries>
+		</messages>
+
+	</panel>
+</plugin>

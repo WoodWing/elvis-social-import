@@ -1,0 +1,42 @@
+<html>
+<head>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.8.12/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="resources/jquery.tagit.css">
+	<link rel="stylesheet" href="resources/panel.css">
+
+	<script src="${pluginsBaseRootUrl}/web.shared/jquery.js" type="text/javascript"></script>
+	<script src="${pluginsBaseRootUrl}/web.shared/jquery.class.js" type="text/javascript"></script>
+	<script src="${pluginsBaseRootUrl}/web.shared/jquery.cookie.js" type="text/javascript"></script>
+	<script src="${pluginsBaseRootUrl}/web.shared/elvis_api/js/jquery.elvis.js" type="text/javascript"></script>
+	<script src="https://code.jquery.com/ui/1.8.12/jquery-ui.min.js"></script>
+	<script src="resources/tag-it.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="resources/util.js"></script>
+	<script src="resources/panel.js"></script>
+</head>
+
+<body>
+
+	<div class="watchesPanel">
+		<div class="header">
+			<div class="intro">New Twitter topic to watch</div>
+		</div>
+		<div class="topics" id="newTopic">
+			<input id="newTopicName" placeholder="Topic name..." />
+			<ul class="topicKeywordsEdit" id="newTopicKeywords"></ul>
+			<div class="buttons">
+				<button class="basicBtn pale resetNewButton">Reset</button>
+				<button class="basicBtn saveNewButton">Save</button>
+			</div>
+    </div>
+		<div class="header">
+			<div class="intro">Currently watched topics</div>
+		</div>
+		<div class="topics" id="watchedTopics"></div>
+	</div>
+
+	<div class="detailPanel" style="display: none">
+		<div class="back">&larr; Watches</div>
+	</div>
+
+</body>
+</html>
