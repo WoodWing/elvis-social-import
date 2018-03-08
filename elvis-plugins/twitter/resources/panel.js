@@ -4,7 +4,7 @@
 
   var selectedHits;
   var tagitOptions = {
-    placeholderText: 'Add hastag...'
+    placeholderText: 'Add hashtag...'
   };
 
   function renderTopics() {
@@ -94,8 +94,8 @@
       name: topic.name,
       keywords: topic.keywordsEditEl.tagit('assignedTags')
     }
-    if (!topicData.keywords) {
-      alert('Please specify one or multiple topic keywords');
+    if (!topicData.keywords || topicData.keywords.length == 0) {
+      alert('Please specify one or multiple topic hashtags or keywords');
       topic.nameEl.focus();
       return;
     }
@@ -125,8 +125,8 @@
       $('#newTopicName').focus();
       return;
     }
-    if (!topicData.keywords) {
-      alert('Please specify one or multiple topic keywords');
+    if (!topicData.keywords || topicData.keywords.length == 0) {
+      alert('Please specify one or multiple topic hashtags or keywords');
       $('#newTopicKeywords').focus();
       return;
     }

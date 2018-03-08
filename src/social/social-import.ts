@@ -28,11 +28,6 @@ export class SocialImport {
     }
     this.twitterClient = new Twitter(args);
     this.topicConfig = await TopicConfig.getTopicConfig();
-    if (this.topicConfig.topics.length == 0) {
-      this.topicConfig.addTopic(new Topic('Oscars', ['Oscars2018', 'Oscars', 'Oscar', 'Oscars90']));
-      this.topicConfig.addTopic(new Topic('Golden Globes', ['GoldenGlobes', 'GoldenGlobes2018', 'Globes2018', 'GG2018', 'goldenglobe']));
-      this.topicConfig.addTopic(new Topic('Storm Emma', ['StormEmma', 'BeastFromTheEast']));
-    }
     this.searchTwitter();
     // Reset search every minute
     setInterval(this.searchTwitter.bind(this), 60 * 1000);
@@ -42,6 +37,11 @@ export class SocialImport {
     if (this.twitterStream) {
       // Destroy existing stream
       this.twitterStream.destroy();
+    }
+
+    if (this.topicConfig.allKeywords.length == 0) {
+      console.log('Twitter search stopped, there is nothing to search for...');
+      return;
     }
 
     let searchFor:string = this.topicConfig.allKeywords.join(',');
