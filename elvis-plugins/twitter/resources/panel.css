@@ -125,7 +125,7 @@ body {
   margin-left: 5px;
 }
 
-.basic-btn:hover {
+.basicBtn:hover {
   background-color: #1d90c6;
   border-color: #1d90c6;
 }
@@ -136,10 +136,63 @@ body {
   border-color: #e2e2e2;
 }
 
-.backToSearch {
+#tweetDetails {
+  display: flex;
+  flex-direction: column;
+  margin: 10px; 
+}
+
+.back {
   background-color: #f5f6f8;
   text-align: center;
   padding: 10px 0;
   font-size: 16px;
   cursor: pointer;
+}
+
+.tweet {
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.twitterUser {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.twitterUserAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.twitterUserName {
+  font-weight: 700;
+  color: #009EE2;
+  margin-left: 10px;
+}
+
+.tweetText {
+  color: #333;
+  margin: 10px 0px;
+}
+
+.tweetImg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.tweetButtons {
+  margin-top: 5px;
+}
+
+.tweetButtons .basicBtn {
+  margin-left: 0px;
+}
+
+.tweetTags {
+  margin-bottom: 20px;
 }

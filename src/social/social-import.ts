@@ -6,7 +6,6 @@ import request = require('request');
 import path = require('path');
 import hashFile = require('hash_file');
 import { TopicConfig } from './topic-config';
-import { Topic } from './topic';
 
 export class SocialImport {
 
@@ -39,7 +38,7 @@ export class SocialImport {
       this.twitterStream.destroy();
     }
 
-    if (this.topicConfig.allKeywords.length == 0) {
+    if (!this.topicConfig.allKeywords || this.topicConfig.allKeywords.length == 0) {
       console.log('Twitter search stopped, there is nothing to search for...');
       return;
     }
@@ -114,7 +113,7 @@ export class SocialImport {
       tags: [],
       imageCreator: tweet.user.name,
       imageCreatorID: tweet.user.id_str,
-      imageCreatorImageID: mediaItem.id_str,
+      imageCreatorImageID: tweet.user.profile_image_url,
       creatorName: tweet.user.name
     };
 
@@ -137,7 +136,7 @@ export class SocialImport {
 
       let bb:any = place.bounding_box;
        // Use boundingbox coordinates if we don't have exact coordinates and if they exist
-      if (!hasExactCoordinates && bb.coordinates && bb.coordinates.length == 1 && bb.coordinates[0].length == 4 && bb.type === 'Polygon') {
+      if (!hasExactCoordinates && bb && bb.coordinates && bb.coordinates.length == 1 && bb.coordinates[0].length == 4 && bb.type === 'Polygon') {
         let c:number[] = bb.coordinates[0];
         metadata['gpsLongitude'] = (c[0][0] + c[2][0]) / 2;
         metadata['gpsLatitude'] = (c[0][1] + c[1][1]) / 2;

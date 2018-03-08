@@ -2,11 +2,12 @@
   var elvisApi;
   var elvisContext;
 
-  var selectedHits;
   var tagitOptions = {
     placeholderText: 'Add hashtag...'
   };
-
+  
+  var selectedHits;
+  
   function renderTopics() {
     Util.callSocialApi(elvisApi, {
       type: 'GET',
@@ -48,6 +49,59 @@
       </div>
     `
   }
+
+  /**
+   * Selection change handler that acts when the asset selection changes
+   */
+  function selectionUpdated() {
+    if (!elvisContext || !parent) {
+      // Plugin is no longer active
+      return;
+    }
+    selectedHits = elvisContext.activeTab.originalAssetSelection;
+    renderDetailPanel();
+    showCorrectPanel();
+  }
+
+  /**
+   * Show twitter details for the currently selected asset
+   */
+  function renderDetailPanel() {
+    if (selectedHits.length !== 1) {
+      $('#tweetDetails').html('<div class="#invalidSelection">Select one file</div>');
+      return;
+    }
+   
+    var hit = selectedHits[0];
+    var m = hit.metadata;
+
+    var html = `
+      <div class="header">
+        <div class="intro">Tweet details</div>
+      </div>
+      <div class="tweet topic">
+        <div class="twitterUser">
+          <img class="twitterUserAvatar" src="${m.imageCreatorImageID}">
+          <div class="twitterUserName">${m.imageCreator}</div>
+        </div>
+        <div class="tweetText">${m.description}</div>
+        <div class="tweetImgWrapper">
+          <a href="${m.url}" target="_blank">
+            <img class="tweetImg" src="${hit.previewUrl}"/>
+          </a>
+        </div>
+        <div class="tweetButtons">
+          <button class="basicBtn" id="copyTweet">Copy tweet link</button>
+        </div>
+      </div>
+      <div class="header">
+        <div class="intro">Tags from AI</div>
+      </div>
+      <div class="tweetTags">${m.tagsFromAI.join(', ')}</div>
+    `;
+
+    $('#tweetDetails').html(html);
+   }
 
   function editTopic() {
     var topic = getTopicInfo($(this));
@@ -173,6 +227,17 @@
     topic.editEl.css('display', (newState === 'edit') ? 'block' : 'none');
   }
 
+  function showCorrectPanel(forceOpenWatchesPanel) {
+    if (forceOpenWatchesPanel || selectedHits.length == 0) {
+      hide('.detailPanel');
+      show('.watchesPanel');
+    }
+    else {
+      hide('.watchesPanel');
+      show('.detailPanel');
+    }
+  }
+
   function show(className) {
     $(className).css('display', 'flex');
   }
@@ -186,20 +251,21 @@
    */
   $(function () {
     elvisContext = ElvisPlugin.resolveElvisContext();
-    // elvisContext.updateCallback = selectionUpdated;
+    elvisContext.updateCallback = selectionUpdated;
     elvisApi = new ElvisAPI("${serverUrl}");
     
     $('#newTopicKeywords').tagit(tagitOptions);
-
-    renderTopics();
-    
     $('body').delegate('.resetNewButton', 'click', resetNewTopic);
     $('body').delegate('.saveNewButton', 'click', saveNewTopic);
     $('body').delegate('.editTopic', 'click', editTopic);
     $('body').delegate('.deleteTopic', 'click', deleteTopic);
     $('body').delegate('.cancelButton', 'click', cancelSave);
     $('body').delegate('.saveButton', 'click', saveExistingTopic);
-     
-    show('.watchesPanel');
+    $('.back').click(() => {
+      showCorrectPanel(true);
+    });
+
+    renderTopics();
+    selectionUpdated();
   });
 })();
