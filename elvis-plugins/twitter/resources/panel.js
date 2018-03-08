@@ -29,8 +29,8 @@
           <div class="topicHeader">
             <div class="topicName">${topicName}</div>
             <div class="topicActions">
-              <a class="topicAction editTopic" href="#">E</a>
-              <a class="topicAction deleteTopic" href="#">X</a>
+              <a class="topicAction editTopic" href="#"><img src="resources/edit.png"></a>
+              <a class="topicAction deleteTopic" href="#"><img src="resources/delete.png"></a>
             </div>
           </div>
           <div class="topicKeywords">${getKeywordString(topicData.keywords)}</div>
