@@ -187,12 +187,29 @@ body {
 
 .tweetButtons {
   margin-top: 5px;
+  display: flex;
+  flex-direction: row;
 }
 
 .tweetButtons .basicBtn {
   margin-left: 0px;
 }
 
+.googleLogo {
+  width: 26px;
+  height: 26px;
+}
+
+.googleLink {
+  margin-left: 5px;
+}
+
 .tweetTags {
   margin-bottom: 20px;
+}
+
+#copyTextArea {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
 }

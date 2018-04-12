@@ -101,12 +101,14 @@ export class SocialImport {
   private getElvisMetadata(tweet:any, mediaItem:any, foundKeyword:string):any {
     let filename:string = path.basename(mediaItem.media_url_https);
     
+    var tweetUrl = 'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str;
+
     let metadata = {
       assetPath: '/Demo Zone/Social/Twitter/' + foundKeyword + '/' + filename,
       url: mediaItem.url,
       source: 'Twitter',
       sourceId: tweet.id_str,
-      sourceUrl: mediaItem.media_url_https,
+      sourceUrl: tweetUrl,
       created: tweet.created_at,
       termsAndConditionsURL: 'https://twitter.com/en/tos',
       description: tweet.text,
@@ -114,7 +116,15 @@ export class SocialImport {
       imageCreator: tweet.user.name,
       imageCreatorID: tweet.user.id_str,
       imageCreatorImageID: tweet.user.profile_image_url,
-      creatorName: tweet.user.name
+      creatorName: tweet.user.name,
+      cf_tweetObject: JSON.stringify(tweet, null, 2),
+      cf_tweetUserLocation: tweet.user.location,
+      cf_tweetUserDescription: tweet.user.description,
+      cf_tweetUserFollowersCount: tweet.user.followers_count,
+      cf_tweetUserFriendsCount: tweet.user.friends_count,
+      cf_tweetUserListedCount: tweet.user.listed_count,
+      cf_tweetUserFavouritesCount: tweet.user.favourites_count,
+      cf_tweetUserStatusesCount: tweet.user.statuses_count,
     };
 
     if (tweet.entities.hashtags) {

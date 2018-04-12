@@ -1,13 +1,15 @@
-(function() {
+(function () {
   var elvisApi;
   var elvisContext;
+
+  var GOOGLE_IMAGE_SEARCH_URL = 'http://www.google.com/searchbyimage?sbisrc=cr_1_3_2&image_url=';
 
   var tagitOptions = {
     placeholderText: 'Add hashtag...'
   };
-  
+
   var selectedHits;
-  
+
   function renderTopics() {
     Util.callSocialApi(elvisApi, {
       type: 'GET',
@@ -23,7 +25,7 @@
 
   function renderTopic(topicData) {
     var topicName = Util.escapeHtml(topicData.name);
-    
+
     return `
       <div class="topic" data-topic="${topicName}">
         <div class="topicRead">
@@ -71,10 +73,14 @@
       $('#tweetDetails').html('<div class="#invalidSelection">Select one file</div>');
       return;
     }
-   
+
     var hit = selectedHits[0];
     var m = hit.metadata;
+    var tagsFromAi = m.tagsFromAI ? m.tagsFromAI.join(', ') : '';
 
+    var googleLink = renderGoogleLink(m.cf_tweetObject);
+    var displayLink = googleLink.length > 0 ? 'flex' : 'none';
+    
     var html = `
       <div class="header">
         <div class="intro">Tweet details</div>
@@ -92,21 +98,33 @@
         </div>
         <div class="tweetButtons">
           <button class="basicBtn" id="copyTweet">Copy tweet link</button>
+          <a href="${googleLink}" target="_blank" class="googleLink" style="display: ${displayLink}" title="Search this image on Google"><img src="resources/google-logo.svg" class="googleLogo"></a>
         </div>
       </div>
       <div class="header">
         <div class="intro">Tags from AI</div>
       </div>
-      <div class="tweetTags">${m.tagsFromAI.join(', ')}</div>
+      <div class="tweetTags">${tagsFromAi}</div>
     `;
 
     $('#tweetDetails').html(html);
-   }
+  }
+
+  function renderGoogleLink(tweet) {
+    try {
+      var tweetObj = JSON.parse(tweet)
+      return GOOGLE_IMAGE_SEARCH_URL + encodeURIComponent(tweetObj.extended_entities.media[0].media_url_https);
+    }
+    catch (e) {
+      console.log('Warning: Unable to create Google Image Search Link: ' + e);
+      return '';
+    }
+  }
 
   function editTopic() {
     var topic = getTopicInfo($(this));
     console.log('Edit: ' + topic.name);
-    
+
     // Update keyword editor
     var keyEditor = topic.keywordsEditEl;
     keyEditor.tagit(tagitOptions);
@@ -114,7 +132,7 @@
     topic.keywordsEl.text().split(',').forEach((keyword) => {
       keyEditor.tagit('createTag', keyword.trim());
     });
-    
+
     switchState(topic, 'edit');
   }
 
@@ -122,7 +140,7 @@
     var topic = getTopicInfo($(this));
     console.log('Delete: ' + topic.name);
 
-    if(confirm('Do you really want to stop watching "' + topic.name + '"?')) {
+    if (confirm('Do you really want to stop watching "' + topic.name + '"?')) {
       Util.callSocialApi(elvisApi, {
         type: 'DELETE',
         url: Util.BASE_URL + '/' + topic.name,
@@ -155,7 +173,7 @@
     }
 
     // TODO: check for unique topic name 
-    
+
     Util.callSocialApi(elvisApi, {
       type: 'PUT',
       url: Util.BASE_URL,
@@ -186,7 +204,7 @@
     }
 
     // TODO: check for unique topic name 
-   
+
     Util.callSocialApi(elvisApi, {
       type: 'PUT',
       url: Util.BASE_URL,
@@ -216,6 +234,14 @@
       editEl: topicElement.children('.topicEdit'),
       keywordsEditEl: topicElement.find('.topicKeywordsEdit')
     };
+  }
+
+  function copyTweet() {
+    var m = selectedHits[0].metadata;
+    var textArea = $('#copyTextArea');
+    textArea.val(m.sourceUrl);
+    textArea.select();
+    console.log(document.execCommand('copy'));
   }
 
   function getKeywordString(keywords) {
@@ -253,7 +279,7 @@
     elvisContext = ElvisPlugin.resolveElvisContext();
     elvisContext.updateCallback = selectionUpdated;
     elvisApi = new ElvisAPI("${serverUrl}");
-    
+
     $('#newTopicKeywords').tagit(tagitOptions);
     $('body').delegate('.resetNewButton', 'click', resetNewTopic);
     $('body').delegate('.saveNewButton', 'click', saveNewTopic);
@@ -261,6 +287,7 @@
     $('body').delegate('.deleteTopic', 'click', deleteTopic);
     $('body').delegate('.cancelButton', 'click', cancelSave);
     $('body').delegate('.saveButton', 'click', saveExistingTopic);
+    $('body').delegate('#copyTweet', 'click', copyTweet);
     $('.back').click(() => {
       showCorrectPanel(true);
     });
