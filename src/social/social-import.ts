@@ -69,7 +69,7 @@ export class SocialImport {
   private async downloadTweetMedia(tweet: any): Promise<void> {
     if (tweet.entities && tweet.entities.media && !tweet.retweeted_status) {
       let media = tweet.entities.media;
-      let foundKeyword: string = this.topicConfig.findKeyword(this.getTweetText(tweet));
+      let foundKeyword: string = this.findKeyword(tweet);
       media.forEach(async mediaItem => {
         console.info('Found a ' + mediaItem.type + ' searching for "' + foundKeyword + '". Tweet url: ' + mediaItem.url + ' Tweet ' + mediaItem.type + ': ' + mediaItem.media_url_https);
         let buffer: Buffer = await this.downloadFile(mediaItem.media_url_https);
@@ -114,11 +114,11 @@ export class SocialImport {
 
   private getElvisMetadata(tweet: any, mediaItem: any, foundKeyword: string): any {
     let filename: string = path.basename(mediaItem.media_url_https);
-
-    var tweetUrl = 'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str;
+    let tweetUrl:string = 'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str;
+    let folderName:string = foundKeyword.length > 0 ? foundKeyword : '_UNMATCHED_IMAGES';
 
     let metadata = {
-      assetPath: Config.twitterFilesDestination + '/' + foundKeyword + '/' + filename,
+      assetPath: Config.twitterFilesDestination + '/' + folderName + '/' + filename,
       url: mediaItem.url,
       source: 'Twitter',
       sourceId: tweet.id_str,
@@ -179,5 +179,34 @@ export class SocialImport {
     }
 
     return metadata;
+  }
+
+  private findKeyword(tweet:any):string {
+    let tweetTxt:string = this.getTweetText(tweet);
+    let tweetWords:string[] = tweetTxt.toLowerCase().match(/[^\s]+/g);
+    let keywordMap = Object.entries(this.topicConfig.topicsByKeyword);
+    for (let [keyword, topic] of keywordMap) {
+      if(tweetWords.includes(keyword.toLowerCase()) || tweetWords.includes('#' + keyword.toLowerCase())) {
+        return topic.name;
+      }
+    }
+    // Not found on exact word match, fallback to partial matching
+    let keyword:string = this.findKeywordInString(keywordMap, tweetTxt);
+    // Not found in tweet text, fallback to url matching
+    if (keyword.length == 0 && tweet.entities && tweet.entities.urls) {
+      // Just searching through the complete urls object as string since the alternative would include way too many loops
+      keyword = this.findKeywordInString(keywordMap, JSON.stringify(tweet.entities.urls));
+    }
+    return keyword;
+  }
+
+  private findKeywordInString(keywordMap, text):string {
+    let txtLowercase:string = text.toLowerCase();
+    for (let [keyword, topic] of keywordMap) {
+      if(txtLowercase.indexOf(keyword.toLowerCase()) > -1) {
+        return topic.name;
+      }
+    }
+    return '';
   }
 }

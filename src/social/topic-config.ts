@@ -37,6 +37,10 @@ export class TopicConfig {
     return this._allKeywords;
   }
 
+  public get topicsByKeyword():Topic[] {
+    return this._topicsByKeyword;
+  }
+
   public saveTopic(topic:Topic):void {
     let existingTopic:Topic = this.topics.find((t:Topic) => {
       return t.name === topic.name;
@@ -58,23 +62,6 @@ export class TopicConfig {
     });
   }
   
-  public findKeyword(tweetTxt:string):string {
-    let tweetWords:string[] = tweetTxt.toLowerCase().match(/[^\s]+/g);
-    let keywordMap = Object.entries(this._topicsByKeyword);
-    for (let [keyword, topic] of keywordMap) {
-      if(tweetWords.includes(keyword.toLowerCase()) || tweetWords.includes('#' + keyword.toLowerCase())) {
-        return topic.name;
-      }
-    }
-    // Not found on exact word match, fallback to partial matching
-    for (let [keyword, topic] of keywordMap) {
-      if(tweetTxt.toLowerCase().indexOf(keyword) > -1) {
-        return topic.name;
-      }
-    }
-    return '';
-  }
-
   public registerChangeHandler(callback:Function, args):void {
     this._changeHandlers.push({
       callback: callback,
