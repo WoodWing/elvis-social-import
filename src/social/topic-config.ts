@@ -1,18 +1,22 @@
 import { Topic } from './topic';
 import { Config } from '../config';
 import * as fs from 'fs';
+import { promisify } from 'util';
 
 export class TopicConfig {
   private _topics:Topic[] = [];
   private _topicsByKeyword:Topic[];
   private _allKeywords:string[];
+  private _changeHandlers = [];
   
+  private readFile = promisify(fs.readFile);
+  private writeFile = promisify(fs.writeFile);
+
   private static instance: TopicConfig;
 
-  public static async getTopicConfig(): Promise<TopicConfig> {
+  public static getInstance(): TopicConfig {
     if (!this.instance) {
       this.instance = new this();
-      await this.instance.loadConfig();
     }
     return this.instance;
   }
@@ -71,9 +75,40 @@ export class TopicConfig {
     return '';
   }
 
+  public registerChangeHandler(callback:Function, args):void {
+    this._changeHandlers.push({
+      callback: callback,
+      args: args
+     });
+  }
+
+  public async loadConfig(): Promise<void> {
+    try {
+      let data = await this.readFile(Config.topicConfigFile, 'utf8')
+      this.topics = JSON.parse(data);
+    }
+    catch(e) {
+      if (e.code !== 'ENOENT') {
+        throw new Error('Unable to load config file: ' + e);
+      }
+    }
+  }
+
+  private async saveConfig(): Promise<void> {
+    try {
+      this.writeFile(Config.topicConfigFile, JSON.stringify(this._topics, null, 2));
+    }
+    catch (e) {
+      throw new Error('Unable to save config file: ' + e);
+    }
+  }
+
   private topicsChangedHandler():void {
     this.resetLookupArrays();
     this.saveConfig();
+    this._changeHandlers.forEach(handler => {
+      handler.callback(handler.args);
+    });
   }
 
   private resetLookupArrays():void {
@@ -87,35 +122,4 @@ export class TopicConfig {
     });
   }
 
-  private async loadConfig(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      fs.readFile(Config.topicConfigFile, 'utf8', (err, data) => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-             resolve();
-          }
-          else {
-             reject('Unable to load config file: ' + err);
-          }
-        }
-        else {
-          this.topics = JSON.parse(data);
-          resolve();
-        }
-      });
-    });
-  }
-
-  private async saveConfig(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      fs.writeFile(Config.topicConfigFile, JSON.stringify(this._topics, null, 2), (err) => {
-        if (err) {
-          reject('Unable to save config file: ' + err);
-        }
-        else {
-          resolve();
-        }
-      });
-    });
-  }
 }

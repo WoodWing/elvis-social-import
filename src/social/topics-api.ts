@@ -9,7 +9,7 @@ export class TopicsApi {
 
   public async addRoutes(): Promise<void> {
 
-    let topicConfig = await TopicConfig.getTopicConfig();
+    let topicConfig = TopicConfig.getInstance();
 
     /**
      * Get topics
