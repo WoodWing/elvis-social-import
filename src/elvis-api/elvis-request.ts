@@ -111,7 +111,7 @@ export class ElvisRequest {
           return;
         }
 
-        if (body.errorcode) {
+        if (body && body.errorcode) {
           response.statusCode = body.errorcode;
           response.statusMessage = body.message;
         }
