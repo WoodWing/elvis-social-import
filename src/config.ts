@@ -4,12 +4,16 @@ export class Config {
    */
   static httpPort: string = process.env.ESI_HTTP_PORT || '9095';
 
+  /**
+   * Twitter credentials to access the Twitter API. 
+   * 
+   * - First, you need a Twitter account (probably a dedicated one for this integration)
+   * - Then, create an App at: https://apps.twitter.com/
+   * - You can now obtain all keys in the Keys and Access Tokens section of your app 
+   */
   static twitterConsumerKey: string = process.env.ESI_TWITTER_CONSUMER_KEY || '';
-
   static twitterConsumerSecret: string = process.env.ESI_TWITTER_CONSUMER_SECRET || '';
-
   static twitterAccessTokenKey: string = process.env.ESI_TWITTER_ACCESS_TOKEN_KEY || '';
-
   static twitterAccessTokenSecret: string = process.env.ESI_TWITTER_ACCESS_TOKEN_SECRET || '';
 
   /**
@@ -18,7 +22,7 @@ export class Config {
   static tempDir: string = process.env.ESI_TEMP_DIR || './temp';
 
   /**
-   * Topic config file.
+   * Topic config file (automatically managed from the Twitter panel).
    */
   static topicConfigFile: string = process.env.ESI_TOPIC_CONFIG_FILE || './topic-config.json';
  
