@@ -1,7 +1,7 @@
 class Util {
 
   static get BASE_URL() {
-    return '/plugins/social_api/topics';
+    return '${serverUrl}/plugins/social_api/topics';
   }
 
   static get ENTITY_MAP() {
