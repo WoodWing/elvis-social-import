@@ -227,42 +227,42 @@
 				<field name="cf_tweetObject" group="Twitter" technical="true">
 					<storage storeInMetadata="true"/>
 					<compass index="no" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="text" multivalue="false" />
+					<data editable="true" datatype="text" multivalue="false" />
 				</field>
 				<field name="cf_tweetUserLocation" group="Twitter">
-                    <storage storeInMetadata="true"/>
+					<storage storeInMetadata="true"/>
 					<compass index="tokenized" analyzer="pureLowerCase" store="yes" excludeFromAll="false" />
-					<data editable="false" datatype="text"/>
+					<data editable="true" datatype="text"/>
 				</field>
 				<field name="cf_tweetUserDescription" group="Twitter">
-                    <storage storeInMetadata="true"/>
+					<storage storeInMetadata="true"/>
 					<compass index="tokenized" analyzer="pureLowerCase" store="yes" excludeFromAll="false" />
-					<data editable="false" datatype="text"/>
+					<data editable="true" datatype="text"/>
 				</field>
 				<field name="cf_tweetUserFollowersCount" group="Twitter">
 					<storage storeInMetadata="true" />
 					<compass index="un_tokenized" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="number" />
+					<data editable="true" datatype="number" />
 				</field>
 				<field name="cf_tweetUserFriendsCount" group="Twitter">
 					<storage storeInMetadata="true" />
 					<compass index="un_tokenized" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="number" />
+					<data editable="true" datatype="number" />
 				</field>
 				<field name="cf_tweetUserListedCount" group="Twitter">
 					<storage storeInMetadata="true" />
 					<compass index="un_tokenized" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="number" />
+					<data editable="true" datatype="number" />
 				</field>
 				<field name="cf_tweetUserFavouritesCount" group="Twitter">
 					<storage storeInMetadata="true" />
 					<compass index="un_tokenized" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="number" />
+					<data editable="true" datatype="number" />
 				</field>
 				<field name="cf_tweetUserStatusesCount" group="Twitter">
 					<storage storeInMetadata="true" />
 					<compass index="un_tokenized" store="yes" excludeFromAll="true" />
-					<data editable="false" datatype="number" />
+					<data editable="true" datatype="number" />
 				</field>
 			</fields>
 		</assetTypeBaseExt>
