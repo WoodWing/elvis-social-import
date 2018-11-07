@@ -32,7 +32,7 @@
     "console-stamp": "^0.2.6",
     "express": "^4.16.3",
     "hash_file": "^0.1.1",
-    "request": "^2.85.0",
+    "request": "^2.88.0",
     "ts-node": "^3.3.0",
     "tslib": "~1.7.1",
     "twitter": "^1.7.1"
