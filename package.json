@@ -30,7 +30,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.18.1",
     "console-stamp": "^0.2.6",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "hash_file": "^0.1.1",
     "request": "^2.88.0",
     "ts-node": "^3.3.0",
